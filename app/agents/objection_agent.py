@@ -1,32 +1,36 @@
-from app.core.llm import client, MODEL
+from openai import OpenAI
+from app.core.llm import get_model, get_openai_config
 from app.rag.retriever import retrieve_products
 
+config = get_openai_config()
+client = OpenAI(**config)
+MODEL = get_model("objection")
+
+
 def objection_agent(state):
+    print("running the objection agent")
     products = retrieve_products(state["input"], limit=5)
 
     SYSTEM_PROMPT = f"""
     You are an expert Sales Objection Handling AI.
 
-    Your job is to address customer concerns and reinforce product value.
-
     AVAILABLE PRODUCTS:
     {products}
 
     CONSTRAINTS:
-    - Do not ignore the objection
+    - Do not ignore objections
     - Do not be defensive
-    - Do not invent features
+    - Do not invent product features
 
     OBJECTIVES:
-    - Understand the concern clearly
-    - Respond with reassurance and logic
-    - Highlight relevant product benefits
+    - Understand the concern
+    - Address it clearly
+    - Reinforce product value
     - Build trust
 
     RESPONSE STYLE:
     - Empathetic and confident
     - Natural and human-like
-    - Persuasive but not aggressive
     """
 
     response = client.chat.completions.create(

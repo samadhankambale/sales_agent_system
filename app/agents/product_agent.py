@@ -1,32 +1,35 @@
-from app.core.llm import client, MODEL
+from openai import OpenAI
+from app.core.llm import get_model, get_openai_config
 from app.rag.retriever import retrieve_products
 
+config = get_openai_config()
+client = OpenAI(**config)
+MODEL = get_model("product")
+
+
 def product_agent(state):
+    print("running the product agent")
     products = retrieve_products(state["input"], limit=5)
 
     SYSTEM_PROMPT = f"""
     You are an expert Product Recommendation AI.
 
-    Your job is to recommend the most relevant products based on customer intent.
-
     AVAILABLE PRODUCTS:
     {products}
 
     CONSTRAINTS:
-    - Use only the provided products
-    - Do NOT invent products
-    - Do NOT show IDs
+    - Use only provided products
+    - Do not invent products
+    - Do not show IDs
 
     OBJECTIVES:
     - Understand user intent
-    - Recommend appropriate number of products:
-        • 1–2 if user wants recommendation
-        • multiple if user is exploring
-    - Mention product names naturally
+    - Recommend relevant products
+    - Adjust number of products based on intent
 
     RESPONSE STYLE:
-    - Natural, persuasive, and concise
-    - Focus on value and relevance
+    - Natural and persuasive
+    - Mention product names clearly
     """
 
     response = client.chat.completions.create(

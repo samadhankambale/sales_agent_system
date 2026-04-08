@@ -1,6 +1,13 @@
-from app.core.llm import client, MODEL
+from openai import OpenAI
+from app.core.llm import get_model, get_openai_config
+
+config = get_openai_config()
+client = OpenAI(**config)
+MODEL = get_model("closing")
+
 
 def closing_agent(state):
+    print("running the closing agent")
     SYSTEM_PROMPT = """
     You are an expert Sales Closing AI.
 
@@ -13,12 +20,11 @@ def closing_agent(state):
     OBJECTIVES:
     - Detect buying intent
     - Reinforce confidence
-    - Suggest next steps (purchase, demo, onboarding)
+    - Suggest next steps
 
     RESPONSE STYLE:
     - Confident and persuasive
     - Clear and action-oriented
-    - Natural and professional
     """
 
     response = client.chat.completions.create(

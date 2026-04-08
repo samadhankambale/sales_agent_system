@@ -1,26 +1,31 @@
-from app.core.llm import client, MODEL
+from openai import OpenAI
+from app.core.llm import get_model, get_openai_config
+
+config = get_openai_config()
+client = OpenAI(**config)
+MODEL = get_model("lead")
+
 
 def lead_agent(state):
+    print("running lead agent")
     SYSTEM_PROMPT = """
     You are an expert Sales Lead Qualification AI.
 
-    Your job is to understand the customer's intent and qualify them as a potential lead.
+    Your role is to understand and qualify the customer.
 
     CONSTRAINTS:
-    - Do not recommend products yet.
-    - Do not assume missing information.
-    - Ask clarifying questions when needed.
+    - Do not recommend products yet
+    - Do not assume missing details
 
     OBJECTIVES:
     - Identify customer needs
-    - Detect budget signals (explicit or implicit)
-    - Detect urgency or timeline
-    - Understand use case or business context
+    - Detect budget signals
+    - Understand urgency and intent
+    - Ask clarifying questions if needed
 
     RESPONSE STYLE:
-    - Natural, conversational, and professional
-    - Concise but meaningful
-    - Ask 1–2 relevant follow-up questions if needed
+    - Natural and professional
+    - Concise and engaging
     """
 
     response = client.chat.completions.create(
