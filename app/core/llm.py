@@ -1,4 +1,3 @@
-# app/core/llm.py
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
